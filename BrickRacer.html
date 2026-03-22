@@ -2,6 +2,7 @@
 <html lang="en"><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>LEGO Pod Racer</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -486,6 +487,73 @@
     box-shadow: 0 4px 0 #b89e00; transition: all 0.15s;
   }
   #map-screen button:hover { background: #fff; transform: translateY(-2px); }
+
+  /* ── MOBILE RESPONSIVE ──────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    #menu h1 { font-size: 42px; letter-spacing: 2px; }
+    #menu h2 { font-size: 15px; margin-bottom: 28px; }
+    #menu button { width: 88vw; font-size: 18px; padding: 14px; margin: 5px; }
+  }
+
+  /* ── VIRTUAL GAMEPAD ────────────────────────────────────────────────────── */
+  #vpad {
+    display: none;
+    position: fixed; inset: 0; z-index: 20;
+    pointer-events: none;
+  }
+  /* Left joystick zone */
+  #vpad-stick-zone {
+    position: absolute; left: 20px; bottom: 30px;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: #ffffff18;
+    border: 3px solid #ffffff44;
+    pointer-events: auto;
+    touch-action: none;
+  }
+  /* The movable nub inside the joystick */
+  #vpad-nub {
+    position: absolute; width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #ffffff55;
+    border: 3px solid #ffffffaa;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  /* Main action button (boost / fire / swing) */
+  #vpad-action {
+    position: absolute; right: 24px; bottom: 50px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #ffdd0066;
+    border: 3px solid #ffdd00cc;
+    color: #000; font-size: 13px; font-weight: bold;
+    font-family: 'Arial Black', Impact, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    letter-spacing: 1px; pointer-events: auto; touch-action: none;
+    user-select: none;
+  }
+  /* Secondary button (only shown in space mode for roll) */
+  #vpad-secondary {
+    position: absolute; right: 120px; bottom: 50px;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #44aaff55;
+    border: 3px solid #44aaffcc;
+    color: #fff; font-size: 12px; font-weight: bold;
+    font-family: 'Arial Black', Impact, sans-serif;
+    display: none; align-items: center; justify-content: center;
+    pointer-events: auto; touch-action: none;
+    user-select: none;
+  }
+  /* Right look-drag zone (trooper battle only) */
+  #vpad-look-zone {
+    display: none;
+    position: absolute; right: 0; top: 0;
+    width: 50%; height: 100%;
+    pointer-events: auto; touch-action: none;
+  }
 </style>
 </head>
 <body>
@@ -495,7 +563,7 @@
 <div id="menu">
   <h1>LEGO POD RACER</h1>
   <h2>NOW THIS IS BRICK RACING!</h2>
-  <p id="menu-wallet" style="color:#00ff88;font-size:18px;margin-bottom:4px;text-shadow:2px 2px 0 #000;letter-spacing:2px;">WALLET: $250</p>
+  <p id="menu-wallet" style="color:#00ff88;font-size:18px;margin-bottom:4px;text-shadow:2px 2px 0 #000;letter-spacing:2px;"></p>
   <p id="menu-stats" style="color:#aaa;font-size:13px;margin-bottom:20px;text-shadow:1px 1px 0 #000;letter-spacing:1px;"></p>
   <button onclick="startGame(1)">1 PLAYER</button>
   <button onclick="startGame(2)">2 PLAYERS</button>
@@ -546,7 +614,7 @@
 
 <div id="map-screen">
   <h2>BOONTA EVE CLASSIC</h2>
-  <p>TATOOINE · MOS ESPA ARENA</p>
+  <p>TATOOINE &middot; MOS ESPA ARENA</p>
   <canvas id="map-canvas" width="520" height="400"></canvas>
   <button onclick="beginRace()">RACE!</button>
 </div>
@@ -587,7 +655,7 @@
 </div>
 
 <div id="space-hud">
-  <div id="space-hud-top">SCORE: <span id="space-score">0</span> • WAVE: <span id="space-wave">1</span></div>
+  <div id="space-hud-top">SCORE: <span id="space-score">0</span> &bull; WAVE: <span id="space-wave">1</span></div>
   <div id="space-hud-hp">SHIELDS: <span id="space-hp">100</span>%</div>
   <div id="space-crosshair"></div>
   <button id="space-back" onclick="window.exitSpaceBattle()">EXIT</button>
@@ -598,7 +666,7 @@
     padding:8px 24px;background:#000000cc;border:2px solid #88eeff;border-radius:6px;
     color:#fff;font-size:14px;font-weight:bold;letter-spacing:2px;text-align:center;
     font-family:'Arial Black',Impact,sans-serif;">
-    WAVE: <span id="trooper-wave">1</span> • TROOPERS: <span id="trooper-count">0</span>
+    WAVE: <span id="trooper-wave">1</span> &bull; TROOPERS: <span id="trooper-count">0</span>
   </div>
   <div id="trooper-hp-bar" style="position:absolute;bottom:60px;left:20px;
     padding:6px 14px;background:#000000cc;border:2px solid #ff4444;border-radius:6px;
@@ -612,7 +680,7 @@
   </div>
   <div id="trooper-swing-hint" style="position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
     color:#ffdd0088;font-size:13px;font-weight:bold;font-family:'Arial Black',Impact,sans-serif;
-    pointer-events:none;">SPACE = SWING SABER • WASD = MOVE • MOUSE = LOOK</div>
+    pointer-events:none;">SPACE = SWING SABER &bull; WASD = MOVE &bull; MOUSE = LOOK</div>
   <button onclick="window.exitTrooperBattle()" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
     padding:10px 30px;font-size:16px;font-weight:bold;background:#ffdd00;color:#000;
     border:3px solid #000;border-radius:8px;cursor:pointer;pointer-events:auto;
@@ -623,7 +691,7 @@
   padding:10px 24px;background:#000000aa;border:3px solid #44aaff;border-radius:8px;
   color:#fff;font-size:14px;font-weight:bold;letter-spacing:2px;z-index:5;
   font-family:'Arial Black',Impact,sans-serif;pointer-events:none;">
-  FREE PLAY — WASD TO WALK • SHIFT TO RUN
+  FREE PLAY &mdash; WASD TO WALK &bull; SHIFT TO RUN
 </div>
 <button id="freeplay-back" onclick="window.exitFreePlay()" style="display:none;position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
   padding:12px 36px;font-size:18px;font-weight:bold;background:#ffdd00;color:#000;
@@ -752,6 +820,22 @@ const AVATAR_SUIT_COLORS = [
 const AVATAR_GOGGLE_COLORS = [
   '#333333', '#0055ff', '#ff0000', '#ffdd00', '#00ff88',
   '#ff8800', '#aa00cc', '#ffffff',
+];
+
+const DROID_TYPES = [
+  { id: 'astromech', name: 'ASTROMECH', desc: 'R2 style' },
+  { id: 'ball',      name: 'BALL DROID', desc: 'BB style' },
+  { id: 'protocol',  name: 'PROTOCOL',  desc: 'C-3PO style' },
+];
+const DROID_COLORS = [
+  { name: 'BLUE',   body: 0x4488cc, trim: 0xeeeeee },
+  { name: 'RED',    body: 0xdd2222, trim: 0xeeeeee },
+  { name: 'GOLD',   body: 0xddaa00, trim: 0xffeedd },
+  { name: 'GREEN',  body: 0x228844, trim: 0xeeffee },
+  { name: 'GREY',   body: 0x888888, trim: 0xcccccc },
+  { name: 'BLACK',  body: 0x222233, trim: 0x555566 },
+  { name: 'ORANGE', body: 0xff7700, trim: 0xffeedd },
+  { name: 'PURPLE', body: 0x7722cc, trim: 0xddaaff },
 ];
 
 const RACER_RADIUS    = 3.5;  // collision bubble around each pod racer
@@ -1241,6 +1325,191 @@ window.addEventListener('keyup', e => { keys[e.code] = false; });
 window.addEventListener('click', () => {
   if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
 }, { once: false });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MOBILE DETECTION & VIRTUAL GAMEPAD
+// ══════════════════════════════════════════════════════════════════════════════
+const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+// Hide 2-player button on mobile
+if (isMobile) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn2p = document.querySelector('#menu button[onclick="startGame(2)"]');
+    if (btn2p) btn2p.style.display = 'none';
+  });
+  // Run immediately too in case DOM is ready
+  const btn2p = document.querySelector('#menu button[onclick="startGame(2)"]');
+  if (btn2p) btn2p.style.display = 'none';
+}
+
+// ── Virtual gamepad state ─────────────────────────────────────────────────
+const vpad = document.getElementById('vpad');
+const vpadNub = document.getElementById('vpad-nub');
+const vpadAction = document.getElementById('vpad-action');
+const vpadSecondary = document.getElementById('vpad-secondary');
+const vpadLook = document.getElementById('vpad-look-zone');
+const stickZone = document.getElementById('vpad-stick-zone');
+
+let _vpadStickId = null, _vpadStickOrigin = { x: 0, y: 0 };
+let _vpadActionId = null, _vpadSecondaryId = null;
+let _vpadLookId = null, _vpadLookLastX = 0;
+const STICK_RADIUS = 38;  // max nub travel in px
+
+// Map joystick angle+magnitude to WASD key presses
+function _vpadUpdateStick(cx, cy) {
+  const dx = cx - _vpadStickOrigin.x;
+  const dy = cy - _vpadStickOrigin.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const deadzone = 12;
+
+  // Move nub visually (clamped)
+  const clamp = Math.min(dist, STICK_RADIUS);
+  const angle = Math.atan2(dy, dx);
+  vpadNub.style.transform = dist > deadzone
+    ? `translate(calc(-50% + ${Math.cos(angle)*clamp}px), calc(-50% + ${Math.sin(angle)*clamp}px))`
+    : 'translate(-50%, -50%)';
+
+  keys['KeyW'] = dist > deadzone && dy < -deadzone * 0.5;
+  keys['KeyS'] = dist > deadzone && dy >  deadzone * 0.5;
+  keys['KeyA'] = dist > deadzone && dx < -deadzone * 0.5;
+  keys['KeyD'] = dist > deadzone && dx >  deadzone * 0.5;
+  // Also mirror to arrow keys for consistency
+  keys['ArrowUp']    = keys['KeyW'];
+  keys['ArrowDown']  = keys['KeyS'];
+  keys['ArrowLeft']  = keys['KeyA'];
+  keys['ArrowRight'] = keys['KeyD'];
+}
+
+function _vpadClearStick() {
+  keys['KeyW'] = keys['KeyS'] = keys['KeyA'] = keys['KeyD'] = false;
+  keys['ArrowUp'] = keys['ArrowDown'] = keys['ArrowLeft'] = keys['ArrowRight'] = false;
+  vpadNub.style.transform = 'translate(-50%, -50%)';
+  _vpadStickId = null;
+}
+
+// Joystick touch events
+stickZone.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+  const t = e.changedTouches[0];
+  _vpadStickId = t.identifier;
+  const r = stickZone.getBoundingClientRect();
+  _vpadStickOrigin = { x: r.left + r.width/2, y: r.top + r.height/2 };
+  _vpadUpdateStick(t.clientX, t.clientY);
+}, { passive: false });
+
+stickZone.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadStickId) _vpadUpdateStick(t.clientX, t.clientY);
+  }
+}, { passive: false });
+
+stickZone.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadStickId) _vpadClearStick();
+  }
+}, { passive: false });
+
+// Action button (boost / fire / swing)
+vpadAction.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+  _vpadActionId = e.changedTouches[0].identifier;
+  keys['ShiftLeft'] = true;
+  keys['Space'] = true;
+  vpadAction.style.background = '#ffdd00cc';
+}, { passive: false });
+
+vpadAction.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadActionId) {
+      keys['ShiftLeft'] = false;
+      keys['Space'] = false;
+      vpadAction.style.background = '#ffdd0066';
+      _vpadActionId = null;
+    }
+  }
+}, { passive: false });
+
+// Secondary button (roll in space mode)
+vpadSecondary.addEventListener('touchstart', e => {
+  e.preventDefault();
+  _vpadSecondaryId = e.changedTouches[0].identifier;
+  keys['KeyQ'] = true;
+  vpadSecondary.style.background = '#44aaffcc';
+}, { passive: false });
+
+vpadSecondary.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadSecondaryId) {
+      keys['KeyQ'] = false;
+      vpadSecondary.style.background = '#44aaff55';
+      _vpadSecondaryId = null;
+    }
+  }
+}, { passive: false });
+
+// Look zone (right side drag — trooper battle camera)
+vpadLook.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.changedTouches[0];
+  _vpadLookId = t.identifier;
+  _vpadLookLastX = t.clientX;
+}, { passive: false });
+
+vpadLook.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadLookId) {
+      _trooperYaw -= (t.clientX - _vpadLookLastX) * 0.006;
+      _vpadLookLastX = t.clientX;
+    }
+  }
+}, { passive: false });
+
+vpadLook.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) {
+    if (t.identifier === _vpadLookId) _vpadLookId = null;
+  }
+}, { passive: false });
+
+// Show/hide/configure vpad for each game mode
+function showVpad(mode) {
+  if (!isMobile) return;
+  vpad.style.display = 'block';
+  vpadLook.style.display = 'none';
+  vpadSecondary.style.display = 'none';
+  if (mode === 'race') {
+    vpadAction.textContent = 'BOOST';
+    vpadAction.style.background = '#ffdd0066';
+    vpadAction.style.borderColor = '#ffdd00cc';
+  } else if (mode === 'space') {
+    vpadAction.textContent = 'FIRE';
+    vpadAction.style.background = '#ff444466';
+    vpadAction.style.borderColor = '#ff4444cc';
+    vpadSecondary.style.display = 'flex';
+  } else if (mode === 'trooper') {
+    vpadAction.textContent = 'SWING';
+    vpadAction.style.background = '#44ff8866';
+    vpadAction.style.borderColor = '#44ff88cc';
+    vpadLook.style.display = 'block';
+    // Shrink stick zone since look zone takes right half
+    stickZone.style.left = '20px';
+  } else if (mode === 'freeplay') {
+    vpadAction.textContent = 'RUN';
+    vpadAction.style.background = '#44aaff66';
+    vpadAction.style.borderColor = '#44aaffcc';
+    // RUN = ShiftLeft in freeplay
+  }
+}
+
+function hideVpad() {
+  vpad.style.display = 'none';
+  keys['KeyW'] = keys['KeyS'] = keys['KeyA'] = keys['KeyD'] = false;
+  keys['ArrowUp'] = keys['ArrowDown'] = keys['ArrowLeft'] = keys['ArrowRight'] = false;
+  keys['ShiftLeft'] = keys['Space'] = false;
+}
 
 class Player {
   constructor(id, color, accentColor) {
@@ -3149,6 +3418,9 @@ function createScene(player) {
   player.mesh = createLegoPodRacer(player);
   scene.add(player.mesh);
 
+  // Droid companion — only for player 1 (the human's avatar)
+  if (player.id === 1) spawnDroid(scene, player.position);
+
   player.camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
   player.scene = scene;
   return scene;
@@ -3612,6 +3884,8 @@ function animate() {
   updateSandPeople();
   updateHUD();
   if (raceActive) checkFinish();
+  // Update droid companion for player 1
+  if (players[0]) updateDroid(players[0].position, players[0].angle, 1);
   renderFrame();
 }
 
@@ -3934,7 +4208,8 @@ updateMenuWallet();
 
 function loadAvatar() {
   const defaults = { name: '', skin: 0, helmet: 0, helmetColor: 0, suit: 0, goggles: 0,
-                     saberOwned: false, saberOn: true, saberBlade: 0, saberHilt: 0, saberLength: 1 };
+                     saberOwned: false, saberOn: true, saberBlade: 0, saberHilt: 0, saberLength: 1,
+                     droidEnabled: false, droidType: 0, droidColor: 0 };
   const saved = localStorage.getItem('brickracer_avatar');
   if (saved) return { ...defaults, ...JSON.parse(saved) };
   return defaults;
@@ -4117,6 +4392,72 @@ function drawAvatarPreview() {
     ctx.fillText(av.name.toUpperCase(), cx, baseY + 12);
     ctx.textAlign = 'start';
   }
+
+  // ── DROID COMPANION (drawn to the right of the pilot) ──
+  if (av.droidEnabled) {
+    const dc = DROID_COLORS[av.droidColor || 0];
+    const bodyHex = '#' + dc.body.toString(16).padStart(6, '0');
+    const trimHex = '#' + dc.trim.toString(16).padStart(6, '0');
+    const dx = cx + 68, dtype = DROID_TYPES[av.droidType || 0].id;
+
+    if (dtype === 'astromech') {
+      // Body cylinder
+      ctx.fillStyle = bodyHex;
+      ctx.fillRect(dx - 14, baseY - 60, 28, 38);
+      // Dome
+      ctx.fillStyle = trimHex;
+      ctx.beginPath(); ctx.arc(dx, baseY - 60, 14, Math.PI, 0); ctx.fill();
+      // Eye
+      ctx.fillStyle = '#ff2200';
+      ctx.beginPath(); ctx.arc(dx - 4, baseY - 63, 4, 0, Math.PI * 2); ctx.fill();
+      // Legs
+      ctx.fillStyle = trimHex;
+      ctx.fillRect(dx - 14, baseY - 22, 8, 22);
+      ctx.fillRect(dx + 6,  baseY - 22, 8, 22);
+      // Trim panels on body
+      ctx.fillStyle = trimHex;
+      ctx.fillRect(dx - 4,  baseY - 55, 8, 26);
+    } else if (dtype === 'ball') {
+      // Ball body
+      ctx.fillStyle = bodyHex;
+      ctx.beginPath(); ctx.arc(dx, baseY - 28, 20, 0, Math.PI * 2); ctx.fill();
+      // Stripe
+      ctx.fillStyle = trimHex;
+      ctx.fillRect(dx - 20, baseY - 32, 40, 8);
+      // Head
+      ctx.fillStyle = trimHex;
+      ctx.beginPath(); ctx.arc(dx, baseY - 54, 11, 0, Math.PI * 2); ctx.fill();
+      // Eyes
+      ctx.fillStyle = '#ff2200';
+      ctx.beginPath(); ctx.arc(dx - 4, baseY - 56, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(dx + 4, baseY - 52, 3, 0, Math.PI * 2); ctx.fill();
+    } else {
+      // Protocol droid (humanoid stick figure)
+      ctx.fillStyle = bodyHex;
+      // Legs
+      ctx.fillRect(dx - 12, baseY - 30, 8, 30);
+      ctx.fillRect(dx + 4,  baseY - 30, 8, 30);
+      // Torso
+      ctx.fillRect(dx - 14, baseY - 64, 28, 34);
+      // Arms
+      ctx.fillRect(dx - 22, baseY - 62, 8, 26);
+      ctx.fillRect(dx + 14, baseY - 62, 8, 26);
+      // Head
+      ctx.fillStyle = trimHex;
+      ctx.fillRect(dx - 12, baseY - 84, 24, 20);
+      // Eyes
+      ctx.fillStyle = '#ff2200';
+      ctx.beginPath(); ctx.arc(dx - 4, baseY - 74, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(dx + 4, baseY - 74, 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Label
+    ctx.fillStyle = bodyHex;
+    ctx.font = 'bold 9px Arial Black, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(DROID_TYPES[av.droidType||0].name, dx, baseY + 12);
+    ctx.textAlign = 'start';
+  }
 }
 
 function renderAvatarOptions() {
@@ -4165,6 +4506,38 @@ function renderAvatarOptions() {
 
   // Goggles color
   addSwatchOption(container, 'GOGGLES', AVATAR_GOGGLE_COLORS, av.goggles, 'goggles');
+
+  // ── DROID COMPANION ──────────────────────────────────────────────────────
+  const droidOpt = document.createElement('div');
+  droidOpt.className = 'avatar-option';
+  droidOpt.style.minWidth = '280px';
+  const droidOnOff = av.droidEnabled
+    ? `<div class="avatar-hat-btn av-selected" onclick="window.setAvatarPart('droidEnabled',false)">✓ ON</div>`
+    + `<div class="avatar-hat-btn" onclick="window.setAvatarPart('droidEnabled',true)">OFF</div>`
+    : `<div class="avatar-hat-btn" onclick="window.setAvatarPart('droidEnabled',false)">ON</div>`
+    + `<div class="avatar-hat-btn av-selected" onclick="window.setAvatarPart('droidEnabled',true)">✓ OFF</div>`;
+  droidOpt.innerHTML = `<div class="avatar-option-label">🤖 DROID COMPANION</div>
+    <div class="avatar-hats">${droidOnOff}</div>`;
+  container.appendChild(droidOpt);
+
+  if (av.droidEnabled) {
+    // Droid type picker
+    const typeOpt = document.createElement('div');
+    typeOpt.className = 'avatar-option';
+    typeOpt.innerHTML = `<div class="avatar-option-label">DROID TYPE</div>
+      <div class="avatar-hats">${DROID_TYPES.map((d, i) =>
+        `<div class="avatar-hat-btn${i === (av.droidType||0) ? ' av-selected' : ''}"
+              onclick="window.setAvatarPart('droidType',${i})"
+              title="${d.desc}">${d.name}</div>`
+      ).join('')}</div>`;
+    container.appendChild(typeOpt);
+
+    // Droid color swatches
+    addSwatchOption(container, 'DROID COLOR', DROID_COLORS.map(c => {
+      // Convert hex number to CSS hex string
+      return '#' + c.body.toString(16).padStart(6, '0');
+    }), av.droidColor || 0, 'droidColor');
+  }
 }
 
 function addSwatchOption(container, label, colors, selected, key) {
@@ -4509,6 +4882,7 @@ window.selectPod = function(podIdx) {
 
 window.beginRace = function() {
   document.getElementById('map-screen').style.display = 'none';
+  showVpad('race');
   runCountdown(() => {
     raceActive = true;
     raceStartTime = performance.now();
@@ -4612,6 +4986,7 @@ function setupGame(count, podChoices) {
 
   players = [];
   bots    = [];
+  _droidMesh = null;
 
   const pod1 = POD_TYPES[podChoices[0].podIdx];
   const c1 = pod1.forcedColor || POD_COLORS[podChoices[0].colorIdx] || POD_COLORS[0];
@@ -4755,6 +5130,7 @@ function animateFreePlay() {
   requestAnimationFrame(animateFreePlay);
 
   updateFreePlayPlayer(players[0]);
+  updateDroid(players[0].position, players[0].angle, 1);
 
   renderer.setScissorTest(false);
   renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
@@ -4797,6 +5173,7 @@ function setupFreePlay() {
 
   // Start in front of the Mos Espa gate (OX=80, gate wall at Z≈502)
   p1.position.set(80, 0.5, 480);
+  spawnDroid(p1.scene, p1.position);
   p1.angle = 0;   // facing toward the town
   p1.speed = 0;
   players.push(p1);
@@ -4809,10 +5186,12 @@ function setupFreePlay() {
 
 window.startFreePlay = function() {
   document.getElementById('menu').style.display = 'none';
+  showVpad('freeplay');
   setupFreePlay();
 };
 
 window.exitFreePlay = function() {
+  hideVpad();
   location.reload();
 };
 
@@ -5212,12 +5591,14 @@ window.startSpaceBattle = function() {
   window.addEventListener('resize', () => renderer.setSize(window.innerWidth, window.innerHeight));
 
   setupSpaceBattle();
+  showVpad('space');
   gameRunning = true;
   spaceBattleActive = true;
   animateSpaceBattle();
 };
 
 window.exitSpaceBattle = function() {
+  hideVpad();
   location.reload();
 };
 
@@ -5237,6 +5618,168 @@ let _trooperDmgFlash = 0;
 let _trooperHitCooldown = 0; // prevents instant multi-hit
 
 // ── Build a LEGO stormtrooper ─────────────────────────────────────────────
+// ── Build a droid companion mesh ─────────────────────────────────────────
+function createLegoDroid(av) {
+  const dc = DROID_COLORS[av.droidColor || 0];
+  const bodyMat = new THREE.MeshPhongMaterial({ color: dc.body, flatShading: true });
+  const trimMat = new THREE.MeshPhongMaterial({ color: dc.trim, flatShading: true });
+  const darkMat = new THREE.MeshPhongMaterial({ color: 0x111111, flatShading: true });
+  const eyeMat  = new THREE.MeshPhongMaterial({ color: 0xff2200, emissive: 0xff1100,
+    emissiveIntensity: 1.2, flatShading: true });
+
+  const g = new THREE.Group();
+  const type = DROID_TYPES[av.droidType || 0].id;
+
+  if (type === 'astromech') {
+    // ── R2-style astromech ─────────────────────────────────────────────────
+    // Main cylinder body
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.82, 10), bodyMat);
+    body.position.y = 0.55;
+    g.add(body);
+    // Body trim panels
+    for (const a of [0, Math.PI * 2/3, Math.PI * 4/3]) {
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.08), trimMat);
+      panel.position.set(Math.sin(a) * 0.34, 0.55, Math.cos(a) * 0.34);
+      panel.rotation.y = a;
+      g.add(panel);
+    }
+    // Dome head
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2), trimMat);
+    dome.position.y = 0.97;
+    g.add(dome);
+    // Eye lens
+    const eye = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.06, 8), eyeMat);
+    eye.rotation.x = Math.PI / 2;
+    eye.position.set(0, 1.05, -0.36);
+    g.add(eye);
+    // Two little legs
+    for (const lx of [-0.28, 0.28]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.38, 0.14), trimMat);
+      leg.position.set(lx, 0.19, 0);
+      g.add(leg);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.1, 0.26), bodyMat);
+      foot.position.set(lx, 0.05, 0.04);
+      g.add(foot);
+    }
+    // Utility arms / detail bits
+    const util = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.18), darkMat);
+    util.position.set(0.32, 0.75, 0);
+    g.add(util);
+
+  } else if (type === 'ball') {
+    // ── BB-style ball droid ────────────────────────────────────────────────
+    // Big round ball body
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.44, 10, 8), bodyMat);
+    ball.position.y = 0.44;
+    g.add(ball);
+    // Stripe around middle
+    const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.12, 10), trimMat);
+    stripe.position.y = 0.44;
+    g.add(stripe);
+    // Small head ball on top
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 6), trimMat);
+    head.position.y = 0.96;
+    g.add(head);
+    // Two eye lenses on head
+    for (const [ex, ey] of [[-0.08, 0.96], [0.08, 1.04]]) {
+      const eyeLens = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 8), eyeMat);
+      eyeLens.rotation.x = Math.PI / 2;
+      eyeLens.position.set(ex, ey, -0.22);
+      g.add(eyeLens);
+    }
+    // Antenna on head
+    const antStick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.22, 5), darkMat);
+    antStick.position.set(0.14, 1.22, 0);
+    g.add(antStick);
+    const antTip = new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 4), eyeMat);
+    antTip.position.set(0.14, 1.35, 0);
+    g.add(antTip);
+
+  } else {
+    // ── Protocol droid (C-3PO style) ──────────────────────────────────────
+    // Legs
+    for (const lx of [-0.18, 0.18]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.5, 0.22), bodyMat);
+      leg.position.set(lx, 0.25, 0);
+      g.add(leg);
+      const knee = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 5), trimMat);
+      knee.position.set(lx, 0.38, 0);
+      g.add(knee);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.28), bodyMat);
+      foot.position.set(lx, 0.06, 0.04);
+      g.add(foot);
+    }
+    // Torso
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.55, 0.36), bodyMat);
+    torso.position.y = 0.82;
+    g.add(torso);
+    // Chest circle detail
+    const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.04, 8), eyeMat);
+    chest.rotation.x = Math.PI / 2;
+    chest.position.set(0, 0.86, 0.19);
+    g.add(chest);
+    // Arms
+    for (const ax of [-0.38, 0.38]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.44, 0.18), bodyMat);
+      arm.position.set(ax, 0.75, 0);
+      g.add(arm);
+    }
+    // Head
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.38), bodyMat);
+    head.position.y = 1.3;
+    g.add(head);
+    // Eyes
+    for (const ex of [-0.1, 0.1]) {
+      const eyeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 5), eyeMat);
+      eyeMesh.position.set(ex, 1.34, -0.2);
+      g.add(eyeMesh);
+    }
+  }
+
+  // Glow light from the eye
+  const glow = new THREE.PointLight(dc.body, 0.6, 2.5);
+  glow.position.y = 1.0;
+  g.add(glow);
+
+  g.scale.setScalar(0.85);
+  return g;
+}
+
+// ── Global droid companion state ─────────────────────────────────────────
+let _droidMesh = null;
+let _droidPos  = new THREE.Vector3();
+
+function spawnDroid(scene, startPos) {
+  const av = loadAvatar();
+  if (!av.droidEnabled) return;
+  _droidMesh = createLegoDroid(av);
+  _droidPos.copy(startPos).add(new THREE.Vector3(1.8, 0, 0));
+  _droidMesh.position.copy(_droidPos);
+  scene.add(_droidMesh);
+}
+
+function updateDroid(playerPos, playerAngle, dt) {
+  if (!_droidMesh) return;
+  // Target: slightly to the right and behind the player
+  const targetX = playerPos.x + Math.cos(playerAngle) * 1.6 - Math.sin(playerAngle) * 0.2;
+  const targetZ = playerPos.z - Math.sin(playerAngle) * 1.6 - Math.cos(playerAngle) * 0.2;
+  _droidPos.x += (targetX - _droidPos.x) * 0.07;
+  _droidPos.z += (targetZ - _droidPos.z) * 0.07;
+  _droidMesh.position.set(_droidPos.x, playerPos.y + 0.05, _droidPos.z);
+  // Droid bobs up and down gently
+  _droidMesh.position.y += Math.sin(performance.now() * 0.003) * 0.06;
+  // Face the direction of travel
+  _droidMesh.rotation.y = Math.atan2(
+    _droidPos.x - _droidMesh.position.x + (targetX - _droidPos.x),
+    _droidPos.z - _droidMesh.position.z + (targetZ - _droidPos.z)
+  );
+}
+
+function removeDroid(scene) {
+  if (_droidMesh && scene) scene.remove(_droidMesh);
+  _droidMesh = null;
+}
+
 function createLegoStormtrooper() {
   const g = new THREE.Group();
   const white = new THREE.MeshPhongMaterial({ color: 0xeeeeee, flatShading: true });
@@ -5675,6 +6218,9 @@ function updateTrooperBattle() {
     trooperPlayer.position.z
   );
 
+  // ── Droid companion ─────────────────────────────────────────────────────
+  updateDroid(trooperPlayer.position, _trooperYaw, 1);
+
   // ── HUD update ──────────────────────────────────────────────────────────
   document.getElementById('trooper-wave').textContent  = trooperWave;
   document.getElementById('trooper-count').textContent = trooperTroopers.length;
@@ -5737,6 +6283,7 @@ window.startTrooperBattle = function() {
   trooperPlayer = buildTrooperPlayerMesh(av);
   trooperPlayer.position.set(0, 0, 5);
   trooperScene.add(trooperPlayer);
+  spawnDroid(trooperScene, trooperPlayer.position);
 
   // Camera
   trooperCamera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
@@ -5761,6 +6308,7 @@ window.startTrooperBattle = function() {
 
   spawnTrooperWave(trooperWave);
   if (av.saberOwned) startSaberHum();
+  showVpad('trooper');
   gameRunning = true;
   animateTrooperBattle();
 };
@@ -5773,10 +6321,20 @@ function _trooperMouseMove(e) {
 
 window.exitTrooperBattle = function() {
   stopSaberHum();
+  removeDroid(trooperScene);
+  hideVpad();
   window.removeEventListener('mousemove', _trooperMouseMove);
   location.reload();
 };
 </script>
 
+
+<!-- Virtual gamepad overlay for mobile -->
+<div id="vpad">
+  <div id="vpad-stick-zone"><div id="vpad-nub"></div></div>
+  <div id="vpad-action">BOOST</div>
+  <div id="vpad-secondary">ROLL</div>
+  <div id="vpad-look-zone"></div>
+</div>
 
 </body></html>
